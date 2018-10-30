@@ -1,9 +1,9 @@
-from main import WpDevopsApp
+from DevPlugin import DevopsAppPlugin
 
-class Pull(WpDevopsApp):
-    def __init__(self):
-        super().__init__()
+class Pull(DevopsAppPlugin):
+    def __init__(self, app):
+        super().__init__(app)
 
 def setup(app):
-    app.register_class('Pull.instance', Pull())
+    app.register_class('Pull.instance', Pull(app))
     print('pull setup')

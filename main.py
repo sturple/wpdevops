@@ -21,6 +21,7 @@ class DevopsApp(object):
 
         self.menu = {}
         self.instance = {}
+        self.logger = self.log;
         self.source = plugin_base.make_plugin_source(searchpath=['./plugins'])
 
         for plugin_name in self.source.list_plugins():
@@ -33,18 +34,17 @@ class DevopsApp(object):
     def register_class(self, name, instance):
         self.instance[name] = instance
 
+    def register_logging(self, logger):
+        self.logger = logger
+
+    def log(self, *a, **kw):
+        print(*a, **kw)
+
 
     def run_application(self):
         for name, instance in sorted(self.instance.items()):
-            print(instance.get_value( 'myKey'))
+            instance.app.logger( 'myKey')
 
-
-class WpDevopsApp(object):
-    def __init__(self):
-        pass
-
-    def get_value(self, key):
-        return key, 'this is the value.'
 
 
 

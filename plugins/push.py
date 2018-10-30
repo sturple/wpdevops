@@ -1,9 +1,9 @@
-from main import WpDevopsApp
+from DevPlugin import DevopsAppPlugin
 
-class Push(WpDevopsApp):
-    def __init__(self):
-        super().__init__()
+class Push(DevopsAppPlugin):
+    def __init__(self, app):
+        super().__init__(app)
 
 def setup(app):
-    app.register_class('Push.instance', Push())
+    app.register_class('Push.instance', Push(app))
     print('setup push')

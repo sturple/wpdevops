@@ -1,9 +1,13 @@
-from main import WpDevopsApp
+from DevPlugin import DevopsAppPlugin
 
-class Log(WpDevopsApp):
-    def __init__(self):
-        super().__init__()
+class Log(DevopsAppPlugin):
+    def __init__(self, app):
+        super().__init__(app)
+
+    def log(self, *a, **kwg):
+        print(a, kwg)
 
 def setup(app):
-    app.register_class('Log.instance', Log())
-    print('Log setup')
+    log = Log(app)
+    app.register_class('Log.instance', log)
+    app.register_logging(log.log)
