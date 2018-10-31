@@ -73,11 +73,11 @@ class Summary(DevopsAppPlugin):
         frame = kwg.get('frame', None)
         label = None
         if frame != None:
-            label = tk.Label(frame, text=kwg.get('repo_name', '??'),  )
+            label = ttk.Label(frame, text=kwg.get('repo_name', '??'),  )
         return label
 
     def index_headers(self, frame, row=10):
-        ttk.Label(frame, text="Commits", background="#ccc", font="Helvetica 14 bold").grid(column=3,columnspan=3, row=row-1, sticky="ew")
+        ttk.Label(frame, text="Commits").grid(column=3,columnspan=3, row=row-1, sticky="ew")
         row_header = [
         ttk.Label(frame, text='Name'),
         ttk.Label(frame, text='Active Branch'),
@@ -87,14 +87,12 @@ class Summary(DevopsAppPlugin):
         ttk.Label(frame, text="Mast"),
         ttk.Label(frame, text="Latest\nTag\nBranch"),
         ttk.Label(frame, text="Latest\nTag\nMaster"),
-        #ttk.Label(tab, text="Errors"),
         ttk.Label(frame, text='Branch\nHash'),
         ttk.Label(frame, text="Master\nHash")
         ]
 
         count = 0
         for data in row_header:
-            data.config(background="#ddd")
             data.grid(column=count, row=row, padx=8, pady=8, sticky="W")
             count += 1
 

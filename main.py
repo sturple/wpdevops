@@ -34,7 +34,8 @@ class DevopsApp(object):
             'add_action' : {},
             'logger' : {},
             'information' : {},
-            'current_repo' : {}
+            'current_repo' : {},
+            'themes' : {}
         }
 
         self.log = self.logger;
@@ -58,6 +59,12 @@ class DevopsApp(object):
 
     def register_menu(self, name, fnct):
         self.data['menu'][name] = fnct
+
+    def register_theme(self, name, register, apply):
+        self.data['themes'][name] = {
+            'register' : register,
+            'apply' : apply
+        }
 
     def do_action(self, name, *a, **kwg):
         '''
@@ -96,13 +103,15 @@ class DevopsApp(object):
 
 
     def render_plugin(self, instance):
+
         frame = self.create_frame()
         self.build_content(frame)
         instance.render(frame=frame)
 
     def build_gui(self):
         self.root = tk.Tk()
-
+        for name, callbacks in sorted(self.data.get('themes', {}).items()):
+            callbacks.get('register')()
         self.root.title("Devops")
         self.root.geometry("1500x900")
         self.vscrollbar = AutoScrollbar(self.root)
