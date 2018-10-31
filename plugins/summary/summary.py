@@ -128,9 +128,3 @@ class Summary(DevopsAppPlugin):
         for data in row_data:
             data.grid(column=count, row=row, padx=padx, pady=pady, sticky="WS")
             count += 1
-
-
-def setup(app):
-    summary = Summary(app)
-    app.register_class('Summary.instance', summary)
-    app.register_menu('Summary.menu', summary.register_menus)

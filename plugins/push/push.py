@@ -45,10 +45,3 @@ class Push(DevopsAppPlugin):
         self.commit_message.grid(row=1, column=0, sticky="w",pady=4, padx=4)
         option_frame.grid(row=1, column=1, sticky="nw", padx=4, pady=4)
         tk.Button(frame, text="Push", command=lambda: self.action_wpush()).grid(row=100, column=0, sticky="w")
-
-
-
-def setup(app):
-    push = Push(app)
-    app.register_class('Push.instance', push)
-    app.add_action('details_push_commit', push.render_commit_message)

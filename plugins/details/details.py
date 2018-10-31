@@ -214,9 +214,3 @@ class Details(DevopsAppPlugin):
 
         if ( not (repo.is_dirty() or len(repo.index.diff(None)) > 0)):
             self.app.do_action('details_pull_action', frame=frame, repo=repo, row=row)
-
-
-def setup(app):
-    details = Details(app)
-    app.register_class('Details.instance', details)
-    app.add_action('summary_repo_name', details.add_repo_button)

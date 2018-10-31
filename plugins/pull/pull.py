@@ -15,8 +15,3 @@ class Pull(DevopsAppPlugin):
         row = kwgs.get('row', 100)
         if frame != None and repo != None:
             ttk.Button(frame, text="Pull", command=lambda: self.action_pull(repo)).grid(column=0, row=row, padx=4, pady=4, sticky="w")
-
-def setup(app):
-    pull = Pull(app)
-    app.register_class('Pull.instance', pull)
-    app.add_action('details_pull_action', pull.get_button)
