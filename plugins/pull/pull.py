@@ -1,5 +1,6 @@
 from DevPlugin import DevopsAppPlugin
 from tkinter import ttk
+import os
 
 class Pull(DevopsAppPlugin):
 
@@ -69,3 +70,29 @@ class Pull(DevopsAppPlugin):
         self.parent_instance = kwgs.get('instance')
         if frame != None and self.parent_instance != None:
             ttk.Button(frame, text="Pull", command=lambda: self.action_pull()).grid(column=0, row=row, padx=4, pady=4, sticky="w")
+
+
+
+    def action_add_repo(self):
+        repo_type_dir = self.get_data('information.location')
+        self.log('adding repo.. yah %s '%repo_type_dir)
+        clone_name = self.askinput_modal("Repo Remote url", 'Please Enter the repo clone url')
+        if clone_name != None and len(clone_name) > 2:
+            filename_w_ext = os.path.basename(clone_name)
+            git_dir, file_extension = os.path.splitext(filename_w_ext)
+            os.chdir(repo_type_dir)
+            self.cmd(['git','clone', clone_name])
+            os.chdir('%s/%s'%(repo_type_dir,git_dir))
+            self.log(os.getcwd())
+            try:
+                self.app.render_plugin(self.parent_instance)
+            except:
+                pass
+
+
+    def get_clone_button(self, *arg, **kwgs):
+        frame = kwgs.get('frame')
+        column = kwgs.get('column')
+        self.parent_instance = kwgs.get('instance')
+        if frame != None and self.parent_instance.name == 'summary':
+            ttk.Button(frame, text="Add Repo", command=lambda: self.action_add_repo()).grid(column=column, row=1, padx=4,pady=4, sticky="e")

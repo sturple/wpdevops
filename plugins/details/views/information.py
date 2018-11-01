@@ -7,6 +7,7 @@ def render_repository_info(self, frame):
     This frame has information about the repositoryself.
     Includes the message dialog that has debug code and dirty files.
     """
+
     repo = self.repo
     repo_name = os.path.basename(os.path.normpath(repo.working_dir))
 

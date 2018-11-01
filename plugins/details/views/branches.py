@@ -6,6 +6,8 @@ def render_branches(self, frame):
     """
     Renders the branches, and options for the branches.
     """
+    #TODO: order branches so that master, development, and release are togetherself.
+    
     repo = self.repo
     row = 1;
     ttk.Label(frame, text="Branch", style="Bold.TLabel").grid(column=0, row=0, padx=4, pady=4, sticky="w")

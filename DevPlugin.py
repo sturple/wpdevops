@@ -66,6 +66,7 @@ class DevopsAppPlugin(object):
             ttk.Button(breadcrumb, text="Refresh", command=lambda: self.app.render_plugin(instance)).pack(anchor="w", side=LEFT)
             breadcrumb.grid(column=3, row=1, padx=4, pady=4, sticky="e")
         header_frame.grid(column=0, row=0, columnspan=2, padx=2, pady=4, sticky=(W,E))
+        self.app.do_action('page_header_after', frame=header_frame, column=10, instance=self)
 
 
 
@@ -277,13 +278,16 @@ class DevopsAppPlugin(object):
                 output = output.decode("utf-8")
         except subprocess.CalledProcessError as exc:
             output = exc.output;
+            self.log(str(exc), level="debug")
             if isinstance(output, bytes):
                 output = output.decode("utf-8")
-            return None
+            else:
+                return None
         return output.strip('"').strip()
 
 
     def check_debug_code(self):
+        ''' Checks debug code in repo for var_dump, error_log or console.log '''
         return self.cmd([
             'egrep',
             '-rni',
@@ -298,7 +302,9 @@ class DevopsAppPlugin(object):
         ], 'Error %s')
 
     def get_version(self, path):
-        """ Gets the version from css or php file"""
+        ''' Gets the version from css or php file '''
+        #FIXME: version in theme could get a php file first, this is true in sage.
+
         for roots, dirs, fnames in os.walk(path):
             for fname in fnames:
                 if fname.endswith('.php') or fname.endswith('.css'):

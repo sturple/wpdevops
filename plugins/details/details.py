@@ -71,7 +71,7 @@ class Details(DevopsAppPlugin):
         self.render_repository_info(info_frame)
         info_frame.grid(row=10, column=0, padx=8, pady=8, sticky="nw")
 
-        branch_frame = ttk.LabelFrame(frame, text="Braches")
+        branch_frame = ttk.LabelFrame(frame, text="Branches")
         self.render_branches(branch_frame)
         branch_frame.grid(row=10, column=1, padx=8, pady=8, sticky="nw")
 

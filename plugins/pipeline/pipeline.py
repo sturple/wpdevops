@@ -15,7 +15,7 @@ class Pipeline(DevopsAppPlugin):
         ''' '''
         #TODO: add a do_action to add sync to server from pipeline.
         repo = kwg.get('repo')
-        if self.remote_status('http://cactuar.dmz/gitlist'):
+        if self.remote_status(''):
             pass
 
     def push_successful(self, *a, **kwg):
