@@ -23,14 +23,16 @@ class Summary(DevopsAppPlugin):
 
         self.app.data['information'] =  {
             'title' : self.title.title(),
-            'repo_name' : self.title,
+            'repo_type' : self.title,
             'location' : self.location
         }
+        self.app.data['current_repo'] = {}
 
         self.app.action = self.name + self.title
         frame = kwg.get('frame', None)
         row = 100
         if frame != None and self.location != None:
+            self.set_page_header(frame, self)
             self.index_headers(frame)
             for repo in self.get_repos(self.location):
                 if self.app.action == self.name + self.title:

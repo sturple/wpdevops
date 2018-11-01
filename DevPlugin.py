@@ -1,4 +1,4 @@
-import tkinter as tk
+from  tkinter import *
 from tkinter import ttk
 from tkinter import messagebox as msg
 from tkinter import simpledialog, filedialog
@@ -16,30 +16,57 @@ class DevopsAppPlugin(object):
         self.app.log(*a, **kwg)
 
     def get_data(self, namespace="", default=None):
-        """This uses namespace to parse through config file ie config.Repos.plugins """
-        spaces = re.sub(r'\s', '', namespace).split('.');
-        v = self.app.data
-        for space in spaces:
-            try:
-                v = v.get(space,default)
-            except AttributeError as e:
-                pass
-        return v
+        return self.app.get_data(namespace=namespace, default=default)
 
-    def set_page_header(self, frame):
-        ''''
-        repo = self.controller.model.repo
-        data = self.controller.model.repo_config
-        title = tk.Label(frame, text=data.get('title', ''), font="Helvetica 22 bold", bg=self.background)
-        path = tk.Label(frame, text=data.get('root_path',''), bg=self.background)
+
+    def get_repo(self, repo=None):
+        if repo == None:
+            repo = self.get_data('current_repo.repo')
+
+        os.chdir(repo.working_dir)
+        version, vfile = self.get_version(repo.working_dir)
+        repo_type = self.get_data('information.repo_type')
+        current_repo = {
+            'version' : version,
+            'version_file' : vfile,
+            'latest_tag' : self.cmd(['git', 'describe', '--abbrev=0', '--tags']),
+            'debug_code' : self.check_debug_code(),
+            'repo'       : repo,
+            'repo_name'  : os.path.basename(os.path.normpath(repo.working_dir)),
+            'ci_cd'      : self.get_data('config.repo_%s.ci_cd'%repo_type, True)
+        }
+        self.app.data['current_repo'] = current_repo
+
+        return repo
+
+    def render(self):
+        pass
+
+    def askinput_modal(self, title, question):
+        return simpledialog.askstring(title, question, parent=self.app.root)
+
+    def askyesno(self, title, question):
+        return msg.askyesno(title, question)
+
+    def set_page_header(self, frame, instance):
+
+        header_frame = ttk.Frame(frame)
+        repo = self.get_data('current_repo.repo')
+        title_text = self.get_data('information.title')
+        repo_name = self.get_data('current_repo.repo_name')
+        if repo_name != None:
+            title_text += ' - %s'%repo_name
+        title = ttk.Label(header_frame, text=title_text, style="H1.TLabel")
+        path = ttk.Label(header_frame, text=self.get_data('information.location'))
         title.grid(column=0, row=1, padx=4, pady=4, sticky="w")
-        path.grid(column=0, row=2, padx=4, pady=4, sticky="w")
+        path.grid(column=1, row=1, padx=4, pady=4, sticky="w")
         if repo != None:
-            breadcrumb = tk.Frame(frame)
-            tk.Button(breadcrumb, text="Repository", command=lambda: self.controller.action_load_index(data['repo_type'])).pack(anchor="w", side=tk.LEFT)
-            tk.Button(breadcrumb, text="Refresh", command=lambda: self.controller.action_repo_info(repo)).pack(anchor="w", side=tk.LEFT)
-            breadcrumb.grid(column=0, row=3, padx=4, pady=4, columnspan=2, sticky="w")
-        '''
+            breadcrumb = Frame(header_frame)
+            #ttk.Button(breadcrumb, text="Repository", command=lambda: self.controller.action_load_index(data['repo_type'])).pack(anchor="w", side=tk.LEFT)
+            ttk.Button(breadcrumb, text="Refresh", command=lambda: self.app.render_plugin(instance)).pack(anchor="w", side=LEFT)
+            breadcrumb.grid(column=3, row=1, padx=4, pady=4, sticky="e")
+        header_frame.grid(column=0, row=0, columnspan=2, padx=2, pady=4, sticky=(W,E))
+
 
 
     def get_repo_health(self, type, repo):

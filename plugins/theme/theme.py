@@ -7,13 +7,17 @@ class Theme(DevopsAppPlugin):
     location = None
     foreground = '#333333'
     background = '#e9e9e9'
-    font ="Helvetica 11"
-    bold_font ="Helvetica 11 bold"
+    font_size = 13
+    font_family = 'Helvetica'
+
     padding = 5
 
     def __init__(self, app):
         super().__init__(app)
         self.name = 'theme'
+        self.font ="%s %d" %(self.font_family, self.font_size)
+        self.bold_font ="%s %d bold"  %(self.font_family, self.font_size)
+        self.h1_font = "%s %d bold"  %(self.font_family, self.font_size)
 
 
 
@@ -42,10 +46,26 @@ class Theme(DevopsAppPlugin):
                     "background" : self.background
                 }
             },
-            "TButton" : {
+            "Warn.TLabel" : {
                 "configure" : {
                     "padding" : self.padding,
-                    "border" : self.padding,
+                    "font" : self.font,
+                    "foreground" : "red",
+                    "background" : self.background
+                }
+            },
+            "H1.TLabel" : {
+                "configure" : {
+                    "padding" : self.padding,
+                    "font" : self.h1_font,
+                    "foreground" : self.foreground,
+                    "background" : self.background
+                }
+            },
+            "TButton" : {
+                "configure" : {
+                    "padding" : (20, 5, 20, 5),
+                    "border" : 4,
                     "relief" : "ridge"
                 },
                 "map" : {
@@ -53,12 +73,30 @@ class Theme(DevopsAppPlugin):
                     "background" : [('pressed', '!disabled','black'), ('active', 'white')]
                 }
             },
-            "TLabelFrame" : {
+            "TLabelframe" : {
+                "configure" : {
+                    "padding" : self.padding,
+                    "font" : self.font,
+                    "foreground" : self.foreground,
+                    "background" : self.background,
+                    "relief" : 'groove'
+                }
+            },
+            "TCheckbutton" : {
                 "configure" : {
                     "padding" : self.padding,
                     "font" : self.font,
                     "foreground" : self.foreground,
                     "background" : self.background
-                }            
+                }
+            },
+            "tixScrolledText" : {
+                "configure" : {
+                    "padding" : self.padding,
+                    "font" : "Courier 16",
+                    "foreground" : "#cccccc",
+                    "background" : 'black'
+
+                }
             }
         })

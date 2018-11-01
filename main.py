@@ -1,11 +1,9 @@
-import os, pkgutil
+import os, pkgutil, sys, re
 from functools import partial
 from pluginbase import PluginBase
 import tkinter as tk
 from tkinter import ttk
-from tkinter import messagebox as msg
-from tkinter import simpledialog, filedialog
-from tkinter import scrolledtext as tkst
+import pprint
 
 # For easier usage calculate the path relative to here.
 here = os.path.abspath(os.path.dirname(__file__))
@@ -24,6 +22,7 @@ class DevopsApp(object):
     vscrollbar = None
     background = "#e9e9e9"
     action = None
+    root = None
 
     def __init__(self):
         # Each application has a name
@@ -41,9 +40,23 @@ class DevopsApp(object):
         self.log = self.logger;
         self.source = plugin_base.make_plugin_source(searchpath=['./plugins'])
 
+        # this is for the config, to load configurations first, before any setups of plugins.
         for plugin_name in self.source.list_plugins():
             plugin = self.source.load_plugin(plugin_name)
-            plugin.setup(self)
+            try:
+                plugin.register(self)
+            except AttributeError:
+                pass
+
+        # this should be the business logic for most plugins.
+        for plugin_name in self.source.list_plugins():
+            plugin = self.source.load_plugin(plugin_name)
+            try:
+                active = self.get_data('config.plugin_%s.active'%plugin_name, True)
+                if active or active == 'True' or active == 'true' or active == 'yes':
+                    plugin.setup(self)
+            except AttributeError:
+                pass
 
         self.build_gui()
         self.run_application()
@@ -66,12 +79,23 @@ class DevopsApp(object):
             'apply' : apply
         }
 
+
+    def get_data(self,namespace="", default=None):
+        """This uses namespace to parse through config file ie config.Repos.plugins """
+        spaces = re.sub(r'\s', '', namespace).split('.');
+        v = self.data
+        for space in spaces:
+            try:
+                v = v.get(space,default)
+            except AttributeError as e:
+                pass
+        return v
+
     def do_action(self, name, *a, **kwg):
-        '''
-        hooks do action if no hook, then do defaults.
-        @todo add priority.
-        @todo figure out multiple action hooks how it is going to work.
-        '''
+        ''' hooks do action if no hook, then do defaults.'''
+        #TODO: add priority.
+        #TODO: figure out multiple action hooks how it is going to work.
+
         found = False
         for key, action in self.data.get('add_action', {}).items():
             if key == name:
@@ -88,7 +112,8 @@ class DevopsApp(object):
             print(msg)
 
     def run_application(self):
-
+        #pp = pprint.PrettyPrinter(indent=4, stream=sys.stderr)
+        #pp.pprint(self.data)
         # render menus
         menubar = tk.Menu(self.root)
         for name, fnct in sorted(self.data.get('menu', {}).items()):
@@ -102,8 +127,9 @@ class DevopsApp(object):
         self.render()
 
 
-    def render_plugin(self, instance):
 
+
+    def render_plugin(self, instance):
         frame = self.create_frame()
         self.build_content(frame)
         instance.render(frame=frame)

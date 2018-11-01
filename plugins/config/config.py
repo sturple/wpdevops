@@ -23,8 +23,11 @@ class Config(DevopsAppPlugin):
     def get_config(self, config_file="~/wp_vars"):
         """ this is used to get config file information wp_vars """
         self.config_parser = configparser.ConfigParser()
+
         try:
             self.config_parser.read( os.path.expanduser(config_file) )
+        except configparser.DuplicateOptionError as e:
+            self.log('Error duplicate entry %s' %str(e), level='error')
         except Exception as e:
             self.log('Error finding config file %s' % config_file, level='error')
             return False

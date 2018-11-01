@@ -1,7 +1,7 @@
 from DevPlugin import DevopsAppPlugin
 import pprint
 import sys, re
-import tkinter as tk
+from  tkinter import *
 from tkinter import scrolledtext as tkst
 
 class Log(DevopsAppPlugin):
@@ -39,8 +39,9 @@ class Log(DevopsAppPlugin):
         frame = kwg.get('frame', None)
         row = kwg.get('row', 100)
         if frame != None:
-            text_box = tkst.ScrolledText(master=frame, wrap=tk.WORD, height=10, width=600)
-            text_box.grid(row=row, column=0, sticky=tk.W)
+            text_box = tkst.ScrolledText(master=frame, wrap=WORD, height=10, width=600)
+            text_box.configure(background="black", foreground="#cccccc")
+            text_box.grid(row=row, column=0, sticky=W)
             sys.stdout = StdRedirector(text_box)
 
     def test(self):
@@ -68,7 +69,6 @@ class StdRedirector(object):
     """
     def __init__(self, text_widget):
         self.text_space = text_widget
-        self.text_space.config(background="black", font="Courier 16")
         self.text_space.tag_config('error', foreground="red")
         self.text_space.tag_config('warn', foreground="orange")
         self.text_space.tag_config('success', foreground="green")
@@ -85,10 +85,10 @@ class StdRedirector(object):
             tag = 'warn'
 
         string = re.sub(r'\[\d{2}m', '', string)
-        self.text_space.config(state=tk.NORMAL, foreground="white")
+        self.text_space.config(state=NORMAL, foreground="white")
         self.text_space.insert("end", string, tag)
         self.text_space.see("end")
-        #self.text_space.config(state=tk.DISABLED)
+        #self.text_space.config(state=DISABLED)
 
     def flush(self):
         pass
