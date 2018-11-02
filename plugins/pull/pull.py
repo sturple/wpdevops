@@ -11,6 +11,18 @@ class Pull(DevopsAppPlugin):
         super().__init__(app)
         self.name = 'pull'
 
+    def term_pull(self, data):
+        self.term_show_title('BCGov Pull')
+        dirname = os.path.abspath('.')
+
+        if self.term_question('Is this the repo to pull from: %s [(Y)es/(N)o] (y) '%dirname, 'y', case_sensitive=True) == 'y':
+            ci_cd = self.term_question('Is there a development branch for ci_cd [(Y)es/(N)o] (y) ', 'y', case_sensitive=True) == 'y'
+            bname = self.term_question("Give Jira Ticket number or branch name?  ")
+            self.do_pull(bname, ci_cd)
+            self.log(self.cmd(['git', 'branch', '-vv']))
+
+    def term_clone(self, data, clone):
+        self.log(data, clone)
 
     def create_development_branch(self):
         ''' Creates Development Branch   '''
@@ -38,27 +50,29 @@ class Pull(DevopsAppPlugin):
             origin_name = 'master'
             if development:
                 origin_name = 'development'
-            self.log('Looks like %s branch has not been created, Creating branch..' % name)
+            self.log('Looks like %s branch has not been created, Creating branch..' %name)
             self.cmd(['git', 'branch', '--track', name, 'origin/%s'%origin_name])
             self.cmd(['git', 'checkout', name])
             return True
+
+    def do_pull(self, branch_name, ci_cd):
+        branch_name = 'feature_%s'%branch_name
+        if ci_cd:
+            self.create_development_branch()
+        results = self.create_feature_branch(branch_name, ci_cd)
+        if results:
+            self.log('Feature branch feature_%s was created and checked out' %branch_name, level='success')
+        else:
+            self.log('Feature branch feature_%s was not created' %branch_name, level='error')
 
 
     def action_pull(self):
         ''' action to pull another version.'''
         self.repo  = self.get_repo()
         ci_cd = self.get_data('current_repo.ci_cd', True)
-
         branch_name = self.askinput_modal("Feature Branch Name", 'Please Enter feature branch name')
         if branch_name != None and len(branch_name) > 2:
-            branch_name = 'feature_%s'%branch_name
-            if ci_cd:
-                self.create_development_branch()
-            results = self.create_feature_branch(branch_name, ci_cd)
-            if results:
-                self.log('Feature branch feature_%s was created and checked out' %branch_name, level='success')
-            else:
-                self.log('Feature branch feature_%s was not created', level='error')
+            self.do_pull(branch_name, ci_cd)
             try:
                 self.app.render_plugin(self.parent_instance)
             except:

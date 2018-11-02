@@ -13,7 +13,10 @@ class DevopsAppPlugin(object):
         self.startup  = False
 
     def log(self, *a, **kwg):
-        self.app.log(*a, **kwg)
+        if self.app == None:
+            print(*a, )
+        else:
+            self.app.log(*a, **kwg)
 
     def get_data(self, namespace="", default=None):
         return self.app.get_data(namespace=namespace, default=default)
@@ -281,8 +284,7 @@ class DevopsAppPlugin(object):
             self.log(str(exc), level="debug")
             if isinstance(output, bytes):
                 output = output.decode("utf-8")
-            else:
-                return None
+            return None
         return output.strip('"').strip()
 
 
@@ -315,3 +317,31 @@ class DevopsAppPlugin(object):
                     if (len(v)) > 0:
                         return 'v'+v, fullpath.replace(path,'')
         return '',''
+
+    def term_question(self, question, default='', case_sensitive=False, repeat=False):
+        if repeat:
+            self.log('\033[36m' +question+ '\033[39m')
+            lines = []
+            while True:
+                s = input()
+                if s:
+                    lines.append(s)
+                else:
+                    break
+            ip = "\n".join(lines)
+        else:
+            while True:
+                ip = input('\033[36m' + question + '\033[39m') or default
+                ip = ip.strip()
+                if case_sensitive:
+                    ip = ip.lower()
+                if len(ip) > 0:
+                    break
+                else:
+                    self.log('...Please enter a value.')
+        return ip
+
+    def term_show_title(self, title=''):
+        self.log('\n----------------------')
+        self.log(title)
+        self.log('----------------------\n')

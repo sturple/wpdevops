@@ -15,8 +15,11 @@ plugin_base = PluginBase(package='main.plugins')
 
 
 class DevopsApp(object):
-    """Represents a simple example application."""
-
+    '''
+    This is the class that handles the PluginBase
+    '''
+    #TODO: will need a way to run this in background mode.
+    #TODO: add logic to autoload modules if not present ie git, pluginbase, ...
     content = None
     mainframe = None
     vscrollbar = None
@@ -74,6 +77,8 @@ class DevopsApp(object):
         self.data['menu'][name] = fnct
 
     def register_theme(self, name, register, apply):
+        ''' registers themes '''
+        #TODO: determine if there is a way for themes to be added together
         self.data['themes'][name] = {
             'register' : register,
             'apply' : apply
@@ -81,7 +86,7 @@ class DevopsApp(object):
 
 
     def get_data(self,namespace="", default=None):
-        """This uses namespace to parse through config file ie config.Repos.plugins """
+        ''' This uses namespace to parse through config file ie config.Repos.plugins '''
         spaces = re.sub(r'\s', '', namespace).split('.');
         v = self.data
         for space in spaces:
@@ -92,7 +97,7 @@ class DevopsApp(object):
         return v
 
     def do_action(self, name, *a, **kwg):
-        ''' hooks do action if no hook, then do defaults.'''
+        ''' hooks do_action if no hook, then do defaults or do nothing used with add_action.'''
         #TODO: add priority.
         #TODO: figure out multiple action hooks how it is going to work.
 
@@ -105,13 +110,19 @@ class DevopsApp(object):
             return default_call(*a, **kwg)
 
     def add_action(self, name, fnct):
+        ''' used to register add_action, when a do_fucntion is called, it will cycle through the add_action for matches '''
         self.data['add_action'][name] =  fnct
 
     def logger(self, *msgs, **kw):
+        ''' default logger, if no logger plugin is used '''
         for msg in msgs:
             print(msg)
 
     def run_application(self):
+        '''
+        Sets ups menus
+        Goes through the instances that have been registered, and looks for startup=True for render (summary)
+        '''
         #pp = pprint.PrettyPrinter(indent=4, stream=sys.stderr)
         #pp.pprint(self.data)
         # render menus
@@ -190,4 +201,5 @@ def main():
     DevopsApp()
 
 if __name__ == '__main__':
-    main()
+    print("You shouldn't run this program directly, please run wgui.py")
+    exit()

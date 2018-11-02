@@ -1,7 +1,8 @@
+
 from DevPlugin import DevopsAppPlugin
 from git import Repo
 import git
-import os
+import os, sys
 
 class Push(DevopsAppPlugin):
     commit_message = None
@@ -14,6 +15,7 @@ class Push(DevopsAppPlugin):
     def __init__(self, app):
         super().__init__(app)
         self.name = 'push'
+
 
     def check_push(self, remote):
         ''' checks to see if push is possible, if not it will fail process '''

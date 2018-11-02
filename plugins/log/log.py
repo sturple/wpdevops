@@ -67,7 +67,7 @@ class Log(DevopsAppPlugin):
     def code_todo(self):
         dir = os.path.dirname(inspect.getfile(DevopsAppPlugin)) +'/'
         self.log('See log file for full list in %s'%dir)
-        output = self.cmd(['egrep','-rn', '--include=*.py','TODO|FIXME', dir])
+        output = self.cmd(['egrep','-rn', '--color', '--include=*.py','TODO|FIXME', dir])
         print(output, file=sys.stderr)
 
     def code_docs(self):
