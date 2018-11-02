@@ -8,21 +8,36 @@ import git
 import os, sys, re, subprocess
 
 class DevopsAppPlugin(object):
+    '''
+    DevopsAppPlugin
+    ~~~~~~~~~~~~~~~
+
+    This is the parent plugin, which stores common methods.
+    '''
+
     def __init__(self, app):
         self.app = app
         self.startup  = False
 
     def log(self, *a, **kwg):
+        ''' adds logging, this could be as simple as a print command or utilizing logging plugins. '''
         if self.app == None:
-            print(*a, )
+            print(*a )
         else:
             self.app.log(*a, **kwg)
 
     def get_data(self, namespace="", default=None):
+        '''
+        this function repoints to self.app.get_data, which allows to convert a namespace using periods.
+        IE config.user.name would get data from dictionany self.app.data['config']['user']['name']
+        '''
+
         return self.app.get_data(namespace=namespace, default=default)
 
 
     def get_repo(self, repo=None):
+        ''' initalizes, and refreshes the self.app['current_repo'] dict, when an update or refresh is made '''
+
         if repo == None:
             repo = self.get_data('current_repo.repo')
 
@@ -39,19 +54,22 @@ class DevopsAppPlugin(object):
             'ci_cd'      : self.get_data('config.repo_%s.ci_cd'%repo_type, True)
         }
         self.app.data['current_repo'] = current_repo
-
         return repo
 
     def render(self):
+        ''' this is what is called, on child classes to render the gui '''
         pass
 
     def askinput_modal(self, title, question):
+        ''' uses tkinter simpledialog to ask a single question in modal ie Add Repo, or Pull '''
         return simpledialog.askstring(title, question, parent=self.app.root)
 
     def askyesno(self, title, question):
+        ''' uses tkinter msg dialog yes / no question '''
         return msg.askyesno(title, question)
 
     def set_page_header(self, frame, instance):
+        ''' Sets the page header.  Usually this is repo url, title, and optional buttons like Add Repo '''
 
         header_frame = ttk.Frame(frame)
         repo = self.get_data('current_repo.repo')
@@ -75,6 +93,7 @@ class DevopsAppPlugin(object):
 
     def get_repo_health(self, type, repo):
         """Used both on the index, and info page.  Used to determine health, and the Red/Orange/Green dot"""
+
         PASS="green"
         WARN="orange"
         FAIL="red"
@@ -83,7 +102,6 @@ class DevopsAppPlugin(object):
         errors = []
         repo_name = os.path.basename(os.path.normpath(repo.working_dir))
         ci_cd_flag = self.get_data('config.repo_%s.ci_cd.abc'%type, False)
-
 
         repo_name = os.path.basename(os.path.normpath(repo.working_dir))
         if str(repo.active_branch.name) == 'master' and ci_cd_flag:
@@ -187,6 +205,7 @@ class DevopsAppPlugin(object):
         }
 
     def check_branch(self, repo, branch='master'):
+        ''' Simply git ver_parse --verify to see if branch exists '''
         try:
             repo.git.rev_parse('--verify', branch)
             return ''
@@ -194,7 +213,6 @@ class DevopsAppPlugin(object):
             return 'No %s branch\n' % branch
 
     def get_branch_stats(self, repo):
-
         """ Gets branch stats used for info page.  This is used with check_commit_error_status to update notifications on info page."""
 
         type = 'plugins'
@@ -342,6 +360,8 @@ class DevopsAppPlugin(object):
         return ip
 
     def term_show_title(self, title=''):
+        ''' shows title in terminal mode '''
+        #TODO: this could be fancy uped a bit...
         self.log('\n----------------------')
         self.log(title)
         self.log('----------------------\n')

@@ -9,7 +9,6 @@ def setup(app):
 
 
 if __name__ == '__main__':
-    print('Running Pull in terminal mode')
     base_dir = os.path.dirname(os.path.realpath(__file__))
     sys.path.append('%s/../../'%base_dir)
     sys.path.append('%s/../../plugins/config/'%base_dir)
@@ -20,13 +19,17 @@ if __name__ == '__main__':
     conf = Config(None)
 
     parser = argparse.ArgumentParser()
-    parser.add_argument('-c', '--clone', help='Uses Git Clone to get repo', default='')
-
+    parser.add_argument('-c', '--clone', help='Uses Git Clone to get repo', default='', nargs='?')
+    parser.add_argument('-d', '--docs', help='Shows docs for this process', default='', nargs='?')
     args = parser.parse_args()
     clone = getattr(args, 'clone')
-    if clone:
-        pull.term_clone(conf.get_data(), clone)
+    docs = getattr(args,'docs')
+    if docs or docs == None:
+        help(Pull)
     else:
-        pull.term_pull(conf.get_data())
+        if clone or clone == None:
+            pull.term_clone(conf.get_data(), clone)
+        else:
+            pull.term_pull(conf.get_data())
 else:
     from .pull import Pull
