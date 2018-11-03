@@ -3,6 +3,7 @@ import pprint
 import sys, re, os, inspect
 from  tkinter import *
 from tkinter import scrolledtext as tkst
+import logging
 
 class Log(DevopsAppPlugin):
     '''
@@ -13,7 +14,12 @@ class Log(DevopsAppPlugin):
 
     def __init__(self, app):
         super().__init__(app)
+        #LOG_FORMAT = "%(levelname)s %(actime)s - %(message)s"
+        #logging.basicConfig(filename = "/var/log/devops/debug.log",
+        #                    level=logging.DEBUG,
+        #                    format=LOG_FORMAT)
         self.name = 'log'
+        #self.logger = logging.getLogger()
 
     def log(self, *msgs, **kwg):
         """ This is the logging function, adds color """
@@ -23,20 +29,27 @@ class Log(DevopsAppPlugin):
         if kwg.get('level','') == 'error':
             #self.log_loop(fg.RED + 'ERROR: %s' + fg.RESET, a, file=sys.stderr)
             self.log_loop(fg.RED + 'ERROR: %s'+ fg.RESET, msgs)
+            #self.logger.error(msgs)
         elif kwg.get('level','') == 'warn':
             self.log_loop(fg.YELLOW + 'WARN:  %s'+ fg.RESET, msgs)
+            #self.logger.warning(msgs)
         elif kwg.get('level','') == 'debug':
             self.log_loop('%s', msgs, level="debug")
+
         elif kwg.get('level','') == 'success':
             self.log_loop(fg.GREEN + '%s' + fg.RESET, msgs)
+            #self.logger.info(msgs)
         else:
             self.log_loop(fg.WHITE + '%s' + fg.RESET, msgs)
+            #self.logger.info(msgs)
 
     def log_loop(self, template, *msgs, **kwg):
         pp = pprint.PrettyPrinter(indent=4, stream=sys.stderr)
         for msg in msgs:
             if kwg.get('level','') == 'debug':
-                pp.pprint(msgs)
+                pp.pprint(msg)
+                #self.logger.debug(msg)
+
             else:
                 print(template%msg)
 

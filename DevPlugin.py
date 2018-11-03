@@ -181,6 +181,8 @@ class DevopsAppPlugin(object):
         org_dev = ''
         master = ''
         org_master = ''
+
+        '''
         if len(self.check_branch(repo, repo.active_branch.name)) == 0:
             branch = list(repo.iter_commits(repo.active_branch.name))
 
@@ -195,6 +197,7 @@ class DevopsAppPlugin(object):
 
         if len(self.check_branch(repo, 'origin/master')) == 0:
             org_master = list(repo.iter_commits('origin/master'))
+        '''
 
         return{
             'branch' : branch,

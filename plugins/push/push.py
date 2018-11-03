@@ -1,10 +1,14 @@
-
 from DevPlugin import DevopsAppPlugin
 from git import Repo
 import git
 import os, sys
 
 class Push(DevopsAppPlugin):
+    '''
+    Push
+    ~~~~~
+
+    '''
     commit_message = None
     commit_message_component = None
     synctoserver = None
@@ -16,6 +20,11 @@ class Push(DevopsAppPlugin):
         super().__init__(app)
         self.name = 'push'
 
+
+    def term_push(self, data):
+        self.term_show_title('BCGov Push')
+        dirname = os.path.abspath('.')
+        self.log(data)
 
     def check_push(self, remote):
         ''' checks to see if push is possible, if not it will fail process '''
@@ -29,6 +38,7 @@ class Push(DevopsAppPlugin):
 
     def update_master(self):
         ''' Updates master, if tags are added, will eventually be removed '''
+        #TODO: Remove after pipeline merges into master.
 
         self.repo.git.checkout('master')
         self.repo.git.pull()
@@ -70,9 +80,7 @@ class Push(DevopsAppPlugin):
 
 
     def action_commit_message(self, remote):
-        '''
-        This does the git add and git comit and tries to push to remote
-        '''
+        ''' This does the git add and git comit and tries to push to remote '''
 
         self.repo.git.add('.')
         self.repo.index.commit(self.commit_message)
@@ -87,6 +95,9 @@ class Push(DevopsAppPlugin):
         return True
 
     def resolve_push_conflict(self, remote):
+        ''' this should try resolve conflicts '''
+        #TODO: this will require a bit of planning to get operational.
+
         self.log('should ask for commit only if dirty, and pull repo to merge.',level='debug')
         '''
         try:
@@ -135,7 +146,10 @@ class Push(DevopsAppPlugin):
 
 
     def render_commit_message(self, *arg, **kwg):
-        ''' This is called from a do_action which is from the details plugin '''
+        '''
+        This is called from a do_action which is from the details plugin
+        do_action - details_push_commit
+        '''
 
         frame = kwg.get('frame', None)
         self.parent_instance = kwg.get('instance', {})
