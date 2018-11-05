@@ -28,4 +28,4 @@ if __name__ == '__main__':
 
 else:
     from .push import Push
-    from .push.views.pushdialog import render_repository_actions
+    

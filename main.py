@@ -26,6 +26,8 @@ class DevopsApp(object):
     background = "#e9e9e9"
     action = None
     root = None
+    version = None
+    author = None
 
     def __init__(self):
         # Each application has a name
@@ -63,6 +65,7 @@ class DevopsApp(object):
 
         self.build_gui()
         self.run_application()
+
 
     def register_class(self, name, instance):
         self.data['instance'][name] = instance
@@ -140,6 +143,7 @@ class DevopsApp(object):
 
 
 
+
     def render_plugin(self, instance):
         frame = self.create_frame()
         self.build_content(frame)
@@ -181,6 +185,11 @@ class DevopsApp(object):
     def render(self):
         self.root.mainloop()
         self.root.update()
+
+    def set_attributes(self, **kwgs):
+        self.version = kwgs.get('version')
+        self.author = kwgs.get('author')
+
 
 class AutoScrollbar(tk.Scrollbar):
     # a scrollbar that hides itself if it's not needed.  only

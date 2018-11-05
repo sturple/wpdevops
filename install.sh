@@ -37,9 +37,12 @@ while getopts ":hrbwe:p:" arg; do
       ;;
   esac
 done
-
+work_dir=$(pwd)
 symlink_list=('push' 'pull' 'wordpress_plugin')
 symlink_alias=('wpush' 'wpull' 'wplugin')
+echo 'Creating wgui symlink'
+symlink="ln -s ${work_dir}/wgui.py /usr/local/bin/wgui"
+$symlink
 
 if [[  -e "/usr/local/bin/_wpush" ]]; then
   # This means that i have already done converting
@@ -70,7 +73,6 @@ else
   fi
   echo 'Creating Symlinks'
   count=0
-  work_dir=$(pwd)
   for i in  "${symlink_list[@]}"
   do
     symlink="ln -s ${work_dir}/plugins/${symlink_list[count]}/__init__.py /usr/local/bin/${symlink_alias[count]}"
@@ -102,7 +104,8 @@ else
   echo 'Appending Repos to end of file.'
   config_text="$(cat <<EOF
 
-\n[Repos]\nplugin=${plugin_path}\ntheme=${theme_path}\n\n[repo_plugin]\nexclude=wordpress-importer,gravityforms\n
+\n[Repos]\nplugin=${plugin_path}\ntheme=${theme_path}\n\n[repo_plugin]\nexclude=wordpress-importer,gravityforms\nrsync=True\nrsync_servers=\nrsync_remote=\n
+test_url=http://cactuar.dmz/gitlist/
 EOF
 )"
 echo $config_text >> $HOME/wp_vars

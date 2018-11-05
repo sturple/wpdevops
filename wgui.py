@@ -4,8 +4,13 @@ from pathlib import Path
 import pip
 from main import *
 
+__version__ = '0.0.1'
+___author__ = 'Shawn Turple'
+
 def main():
-    DevopsApp()
+    devops = DevopsApp()
+    devops.set_attributes(version=__version__, author=__author___)
+    
 
 
 if __name__ == '__main__':
@@ -23,3 +28,5 @@ if __name__ == '__main__':
             pip(['install', package])
 
     main()
+else:
+    print('File %s should be run directly, and not included '%__filename__)

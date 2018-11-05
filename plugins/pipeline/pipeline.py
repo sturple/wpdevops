@@ -1,5 +1,5 @@
 from DevPlugin import DevopsAppPlugin
-import requests, urllib
+import requests, urllib, os, sys
 from requests.auth import HTTPBasicAuth
 
 class Pipeline(DevopsAppPlugin):
@@ -15,13 +15,62 @@ class Pipeline(DevopsAppPlugin):
         ''' '''
         #TODO: add a do_action to add sync to server from pipeline.
         repo = kwg.get('repo')
-        if self.remote_status(''):
-            pass
+        type = self.app.get_data('information.repo_type')
+        test_url = self.app.get_data('config.repo_%s.rsync_test_url'%type, False)
+
+        if test_url and self.remote_status(test_url):
+            data = {
+                'type' : type,
+                'rsync_remote' : self.app.get_data('config.repo_%s.rsync_remote'%type),
+                'user' : self.app.get_data('config.User.user_name'),
+                'local_path' : repo.working_dir
+            }
+            servers = self.app.get_data('config.repo_%s.rsync_servers'%type)
+            if isinstance(servers, list):
+                for server in servers:
+                    self.rsync(server, data)
+            elif isinstance(servers, str):
+                self.rsync(servers, data)
+
+
+    def rsync(self, server, data):
+        """ Does rsync to servers """
+        dest = "%s@%s:%s%s/" % (data.get('user'), server, data.get('rsync_remote'), os.path.split(data.get('local_path',''))[-1])
+        rsync_list = [
+            'rsync',
+            '-a',
+            data.get('local_path','')+'/',
+            dest,
+            "--omit-dir-times",
+            "--no-perms",
+            "--no-owner",
+            "--no-group",
+            "--chmod=g+rwX",
+            "--delete",
+            "--itemize-changes",
+            "--exclude=node_modules",
+            "--exclude=.cache-loader",
+            "--exclude=bower_components",
+            "--exclude=.git"
+
+        ]
+        if data.get('debug',False):
+            rsync_list.append("--verbose")
+            rsync_list.append("--dry-run")
+
+
+        cmd = self.cmd(rsync_list)
+        self.log(cmd,level='debug')
+        if cmd != None:
+            self.log('Synced %s to %s'%(data.get('local_path'), dest),level='success')
+
 
     def push_successful(self, *a, **kwg):
         repo = kwg.get('repo')
         ci_cd = kwg.get('ci_cd')
-        self.trigger_jenkins()
+
+        if ci_cd:
+            self.trigger_jenkins()
 
 
     def push_error(self, *a, **kwg):
@@ -61,7 +110,7 @@ class Pipeline(DevopsAppPlugin):
     def remote_status(self, url):
         online = False
         try:
-            urllib.request.urlopen(url)
+            urllib.request.urlopen(url,timeout=1)
             online = True
         except urllib.error.URLError as error:
             pass

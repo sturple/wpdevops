@@ -16,6 +16,7 @@ class Pull(DevopsAppPlugin):
         * terminal - adds clone repo        [Command] wpull -c,--clone {clone url}
         * terminal - shows these docs.      [Command] wpull -d, --docs
     '''
+    #TODO: What are we going to do with wpull for non cd_ci.
     repo = None
     parent_instance = None
 

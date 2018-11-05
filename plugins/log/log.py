@@ -3,7 +3,7 @@ import pprint
 import sys, re, os, inspect
 from  tkinter import *
 from tkinter import scrolledtext as tkst
-import logging
+
 
 class Log(DevopsAppPlugin):
     '''
@@ -44,6 +44,7 @@ class Log(DevopsAppPlugin):
             #self.logger.info(msgs)
 
     def log_loop(self, template, *msgs, **kwg):
+        #TODO: need to fix the output so it doesn't look like a tupel, need to be like native print.
         pp = pprint.PrettyPrinter(indent=4, stream=sys.stderr)
         for msg in msgs:
             if kwg.get('level','') == 'debug':
@@ -51,7 +52,7 @@ class Log(DevopsAppPlugin):
                 #self.logger.debug(msg)
 
             else:
-                print(template%msg)
+                print(template%str(msg))
 
     def inline_console(self, *arg, **kwg):
         ''' inserts the console at bottom of app '''
@@ -95,6 +96,9 @@ class Log(DevopsAppPlugin):
         self.app.log('This is a warning', level="warn")
         self.app.log('This is an error', level="error")
         self.app.log('This is debug', 'Two lines for debug', level="debug")
+        self.app.log('boolean', True, False, level="debug")
+        self.app.log('list', ['Item1', 'Item2', 'Item3'], level="debug")
+        self.app.log('dict', {'key1' : { 'ikey1' : 'ivalue1', 'ikey2' : 'ivalue2'}, 'key2' : 'value2'}, level="debug")
 
 class fg:
     RED     = '\033[31m'
