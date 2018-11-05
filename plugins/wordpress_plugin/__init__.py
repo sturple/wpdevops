@@ -2,10 +2,8 @@
 import sys, os, argparse
 
 def setup(app):
-    push = Push(app)
-    app.register_class('Push.instance', push)
-    app.add_action('details_push_commit', push.render_commit_message)
-
+    wp_plugin = WordPressPlugin(app)
+    app.register_class('WordPressPlugin.instance', wp_plugin)
 
 if __name__ == '__main__':
     base_dir = os.path.dirname(os.path.realpath(__file__))
@@ -14,7 +12,7 @@ if __name__ == '__main__':
 
     from push import Push
     from config import Config
-    push = Push(None)
+    wp_plugin = WordPressPlugin(None)
     conf = Config(None)
 
     parser = argparse.ArgumentParser()
@@ -22,10 +20,9 @@ if __name__ == '__main__':
     args = parser.parse_args()
     docs = getattr(args,'docs')
     if docs or docs == None:
-        help(Push)
+        help(WordPressPlugin)
     else:
-        push.term_push(conf.get_data())
+        wordpress_plugin.term_plugin(conf.get_data())
 
 else:
-    from .push import Push
-    from .push.views.pushdialog import render_repository_actions
+    from .wordpress_plugin import WordPressPlugin

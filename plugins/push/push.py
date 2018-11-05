@@ -24,7 +24,14 @@ class Push(DevopsAppPlugin):
     def term_push(self, data):
         self.term_show_title('BCGov Push')
         dirname = os.path.abspath('.')
-        self.log(data)
+        self.repo = Repo(dirname)
+        warn_branch = ['master', 'developemnt', 'release']
+        ci_cd = self.term_question('Is there a development branch for ci_cd [(Y)es/(N)o] (y) ', 'y', case_sensitive=True) == 'y'
+        if ci_cd and self.repo.active_branch.name in warn_branch:
+            self.log('\nYou Should\'n being updating %s branch' % self.repo.active_branch.name, level="warn")
+            if self.term_question("Are you sure you want to update %s [(Y)es/(N)o] (n)? "%self.repo.active_branch.name, 'n', case_sensitive=True) == 'n':
+                self.log('Please switch to feature branch and update development branch', level='error')
+
 
     def check_push(self, remote):
         ''' checks to see if push is possible, if not it will fail process '''
@@ -155,5 +162,3 @@ class Push(DevopsAppPlugin):
         self.parent_instance = kwg.get('instance', {})
         if frame != None:
             self.render_repository_actions(frame)
-
-    from .views.pushdialog import render_repository_actions
